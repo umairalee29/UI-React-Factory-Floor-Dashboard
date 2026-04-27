@@ -2,7 +2,14 @@
 
 A real-time factory floor monitoring dashboard built with React, Redux Toolkit, Node.js, Express, MongoDB, and Socket.io.
 
-![OpsFloor Dashboard](docs/screenshot-placeholder.png)
+![OpsFloor Dashboard](docs/banner.svg)
+
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React_18-20232A?style=flat&logo=react&logoColor=61DAFB)
+![Redux](https://img.shields.io/badge/Redux_Toolkit-764ABC?style=flat&logo=redux&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat&logo=mongodb&logoColor=white)
+![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=flat&logo=socketdotio&logoColor=white)
 
 ---
 
