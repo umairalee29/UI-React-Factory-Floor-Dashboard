@@ -1,0 +1,44 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--font-ui);
+  transition: background var(--transition);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.running {
+  background: var(--status-running-muted);
+  color: var(--status-running);
+}
+.running .dot {
+  background: var(--status-running);
+}
+
+.idle {
+  background: var(--status-idle-muted);
+  color: var(--status-idle);
+}
+.idle .dot {
+  background: var(--status-idle);
+}
+
+.fault {
+  background: var(--status-fault-muted);
+  color: var(--status-fault);
+}
+.fault .dot {
+  background: var(--status-fault);
+}

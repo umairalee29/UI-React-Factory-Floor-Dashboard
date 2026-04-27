@@ -1,0 +1,150 @@
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  animation: fade-in 300ms ease both;
+}
+
+.card:hover {
+  border-color: var(--border-hover);
+}
+
+.fault {
+  border-color: var(--status-fault) !important;
+  animation: pulse-fault 2s infinite, fade-in 300ms ease both;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.name {
+  font-family: var(--font-data);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+}
+
+.oeeRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.oeeLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.oeeValue {
+  font-family: var(--font-data);
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.oeePct {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-left: 2px;
+}
+
+.oeeGauge {
+  margin-top: -4px;
+}
+
+.gaugeTrack {
+  height: 4px;
+  background: var(--bg-elevated);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.gaugeFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 600ms ease;
+}
+
+.outputSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.outputLabels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.outputLabel {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.outputValues {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.outputCurrent {
+  font-family: var(--font-data);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.outputSep {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.outputTarget {
+  font-family: var(--font-data);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.progressTrack {
+  height: 6px;
+  background: var(--bg-elevated);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--status-running), #16a34a);
+  border-radius: 3px;
+  transition: width 600ms ease;
+}
+
+.footer {
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+
+.shift {
+  font-size: 0.68rem;
+  text-transform: capitalize;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}

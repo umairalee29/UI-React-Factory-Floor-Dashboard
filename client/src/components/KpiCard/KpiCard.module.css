@@ -1,0 +1,48 @@
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color var(--transition);
+}
+
+.card:hover {
+  border-color: var(--border-hover);
+}
+
+.title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.value {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.number {
+  font-family: var(--font-data);
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.unit {
+  font-family: var(--font-data);
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* Accent variants */
+.running { border-top: 3px solid var(--status-running); }
+.idle    { border-top: 3px solid var(--status-idle); }
+.fault   { border-top: 3px solid var(--status-fault); }
+.accent  { border-top: 3px solid var(--accent); }
