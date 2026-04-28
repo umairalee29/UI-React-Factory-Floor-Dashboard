@@ -7,6 +7,20 @@ import type { RootState, AppDispatch } from '../../store/index.js';
 import type { DowntimeLog, MachineSummary } from '../../types.js';
 import styles from './Downtime.module.css';
 
+type SortCol = 'machine' | 'reason' | 'started' | 'ended' | 'duration' | 'shift';
+type SortDir = 'asc' | 'desc';
+
+function SortIcon({ col, sortCol, sortDir }: { col: SortCol; sortCol: SortCol | null; sortDir: SortDir }): JSX.Element {
+  const upActive   = sortCol === col && sortDir === 'asc';
+  const downActive = sortCol === col && sortDir === 'desc';
+  return (
+    <svg className={styles.sortIcon} viewBox="0 0 8 13" fill="none">
+      <path d="M4 1L1 5.5h6L4 1z"  className={upActive   ? styles.arrowActive : styles.arrowIdle} />
+      <path d="M4 12L1 7.5h6L4 12z" className={downActive ? styles.arrowActive : styles.arrowIdle} />
+    </svg>
+  );
+}
+
 function formatDuration(minutes?: number): string {
   if (!minutes) return '—';
   if (minutes < 60) return `${minutes}m`;
@@ -42,8 +56,21 @@ export default function Downtime(): JSX.Element {
   const [machineFilter, setMachineFilter] = useState('');
   const [dateFilter, setDateFilter] = useState('');
   const [search, setSearch] = useState('');
+  const [sortCol, setSortCol] = useState<SortCol | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 10;
+
+  function handleSort(col: SortCol): void {
+    if (sortCol === col) {
+      if (sortDir === 'asc') { setSortDir('desc'); }
+      else { setSortCol(null); setSortDir('asc'); }
+    } else {
+      setSortCol(col);
+      setSortDir('asc');
+    }
+    setPage(1);
+  }
 
   useEffect(() => {
     if (!machines.length) dispatch(fetchMachines());
@@ -73,8 +100,28 @@ export default function Downtime(): JSX.Element {
       })
     : logs;
 
-  const totalPages = Math.max(1, Math.ceil(filteredLogs.length / PAGE_SIZE));
-  const pagedLogs = filteredLogs.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const sortedLogs = sortCol
+    ? [...filteredLogs].sort((a, b) => {
+        let va: string | number = '';
+        let vb: string | number = '';
+        switch (sortCol) {
+          case 'machine':  va = getMachineName(a);  vb = getMachineName(b);  break;
+          case 'reason':   va = a.reason ?? '';      vb = b.reason ?? '';     break;
+          case 'started':  va = a.started_at ? new Date(a.started_at).getTime() : 0;
+                           vb = b.started_at ? new Date(b.started_at).getTime() : 0; break;
+          case 'ended':    va = a.ended_at ? new Date(a.ended_at).getTime() : 0;
+                           vb = b.ended_at ? new Date(b.ended_at).getTime() : 0; break;
+          case 'duration': va = a.duration_minutes ?? 0; vb = b.duration_minutes ?? 0; break;
+          case 'shift':    va = getMachineShift(a); vb = getMachineShift(b); break;
+        }
+        if (va < vb) return sortDir === 'asc' ? -1 : 1;
+        if (va > vb) return sortDir === 'asc' ?  1 : -1;
+        return 0;
+      })
+    : filteredLogs;
+
+  const totalPages = Math.max(1, Math.ceil(sortedLogs.length / PAGE_SIZE));
+  const pagedLogs = sortedLogs.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   function getPageNumbers(): number[] {
     const delta = 2;
@@ -160,12 +207,27 @@ export default function Downtime(): JSX.Element {
             <table className={styles.table}>
               <thead>
                 <tr>
-                  <th>Machine</th>
-                  <th>Reason</th>
-                  <th>Started</th>
-                  <th>Ended</th>
-                  <th>Duration</th>
-                  <th>Shift</th>
+                  {(
+                    [
+                      { col: 'machine',  label: 'Machine'  },
+                      { col: 'reason',   label: 'Reason'   },
+                      { col: 'started',  label: 'Started'  },
+                      { col: 'ended',    label: 'Ended'    },
+                      { col: 'duration', label: 'Duration' },
+                      { col: 'shift',    label: 'Shift'    },
+                    ] as { col: SortCol; label: string }[]
+                  ).map(({ col, label }) => (
+                    <th
+                      key={col}
+                      className={`${styles.thSortable}${sortCol === col ? ` ${styles.thActive}` : ''}`}
+                      onClick={() => handleSort(col)}
+                    >
+                      <span className={styles.thContent}>
+                        {label}
+                        <SortIcon col={col} sortCol={sortCol} sortDir={sortDir} />
+                      </span>
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -190,10 +252,10 @@ export default function Downtime(): JSX.Element {
           </div>
         )}
 
-        {!loading && filteredLogs.length > PAGE_SIZE && (
+        {!loading && sortedLogs.length > PAGE_SIZE && (
           <div className={styles.pagination}>
             <span className={styles.pageInfo}>
-              {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filteredLogs.length)} of {filteredLogs.length}
+              {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, sortedLogs.length)} of {sortedLogs.length}
             </span>
             <div className={styles.pageControls}>
               <button
