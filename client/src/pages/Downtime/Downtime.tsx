@@ -98,26 +98,27 @@ export default function Downtime(): JSX.Element {
           </span>
         </div>
 
-        <div className={styles.searchRow}>
-          <div className={styles.searchWrap}>
-            <svg className={styles.searchIcon} viewBox="0 0 20 20" fill="none">
-              <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.6"/>
-              <path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
-            </svg>
-            <input
-              className={styles.searchInput}
-              type="text"
-              placeholder="Search by machine, reason, date, shift…"
-              value={search}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
-            />
-            {search && (
-              <button className={styles.searchClear} onClick={() => setSearch('')} aria-label="Clear search">✕</button>
-            )}
-          </div>
-        </div>
-
         <div className={styles.filters}>
+          <div className={`${styles.filterField} ${styles.searchField}`}>
+            <label className={styles.filterLabel}>Search</label>
+            <div className={styles.searchWrap}>
+              <svg className={styles.searchIcon} viewBox="0 0 20 20" fill="none">
+                <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.6"/>
+                <path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+              </svg>
+              <input
+                className={styles.searchInput}
+                type="text"
+                placeholder="Machine, reason, date, shift…"
+                value={search}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+              />
+              {search && (
+                <button className={styles.searchClear} onClick={() => setSearch('')} aria-label="Clear search">✕</button>
+              )}
+            </div>
+          </div>
+
           <div className={styles.filterField}>
             <label className={styles.filterLabel}>Machine</label>
             <select
