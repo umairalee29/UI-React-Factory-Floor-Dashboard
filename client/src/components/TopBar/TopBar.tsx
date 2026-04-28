@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth.js';
 import useLiveClock from '../../hooks/useLiveClock.js';
 import { disconnectSocket } from '../../services/socket.js';
@@ -23,9 +23,9 @@ export default function TopBar(): JSX.Element {
       </div>
 
       <nav className={styles.nav}>
-        <Link to="/dashboard" className={styles.navLink}>Dashboard</Link>
-        <Link to="/downtime" className={styles.navLink}>Downtime</Link>
-        <Link to="/shifts" className={styles.navLink}>Shifts</Link>
+        <NavLink to="/dashboard" className={({ isActive }) => `${styles.navLink}${isActive ? ` ${styles.navLinkActive}` : ''}`}>Dashboard</NavLink>
+        <NavLink to="/downtime" className={({ isActive }) => `${styles.navLink}${isActive ? ` ${styles.navLinkActive}` : ''}`}>Downtime</NavLink>
+        <NavLink to="/shifts" className={({ isActive }) => `${styles.navLink}${isActive ? ` ${styles.navLinkActive}` : ''}`}>Shifts</NavLink>
       </nav>
 
       <div className={styles.right}>
