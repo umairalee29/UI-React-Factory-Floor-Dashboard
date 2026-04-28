@@ -41,6 +41,8 @@ export default function Downtime(): JSX.Element {
 
   const [machineFilter, setMachineFilter] = useState('');
   const [dateFilter, setDateFilter] = useState('');
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 10;
 
   useEffect(() => {
     if (!machines.length) dispatch(fetchMachines());
@@ -51,7 +53,20 @@ export default function Downtime(): JSX.Element {
     if (machineFilter) filters.machine_id = machineFilter;
     if (dateFilter) filters.date = dateFilter;
     dispatch(fetchDowntime(filters));
+    setPage(1);
   }, [dispatch, machineFilter, dateFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(logs.length / PAGE_SIZE));
+  const pagedLogs = logs.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  function getPageNumbers(): number[] {
+    const delta = 2;
+    const range: number[] = [];
+    for (let i = Math.max(1, page - delta); i <= Math.min(totalPages, page + delta); i++) {
+      range.push(i);
+    }
+    return range;
+  }
 
   return (
     <div className={styles.layout}>
@@ -113,12 +128,12 @@ export default function Downtime(): JSX.Element {
                 </tr>
               </thead>
               <tbody>
-                {logs.length === 0 ? (
+                {pagedLogs.length === 0 ? (
                   <tr>
                     <td colSpan={6} className={styles.empty}>No records found</td>
                   </tr>
                 ) : (
-                  logs.map((log) => (
+                  pagedLogs.map((log) => (
                     <tr key={log._id}>
                       <td className={styles.machineName}>{getMachineName(log)}</td>
                       <td>{log.reason}</td>
@@ -131,6 +146,51 @@ export default function Downtime(): JSX.Element {
                 )}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {!loading && logs.length > PAGE_SIZE && (
+          <div className={styles.pagination}>
+            <span className={styles.pageInfo}>
+              {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, logs.length)} of {logs.length}
+            </span>
+            <div className={styles.pageControls}>
+              <button
+                className={styles.pageBtn}
+                onClick={() => setPage((p) => p - 1)}
+                disabled={page === 1}
+              >
+                ‹
+              </button>
+              {page > 3 && (
+                <>
+                  <button className={styles.pageBtn} onClick={() => setPage(1)}>1</button>
+                  {page > 4 && <span className={styles.ellipsis}>…</span>}
+                </>
+              )}
+              {getPageNumbers().map((n) => (
+                <button
+                  key={n}
+                  className={`${styles.pageBtn}${n === page ? ` ${styles.pageBtnActive}` : ''}`}
+                  onClick={() => setPage(n)}
+                >
+                  {n}
+                </button>
+              ))}
+              {page < totalPages - 2 && (
+                <>
+                  {page < totalPages - 3 && <span className={styles.ellipsis}>…</span>}
+                  <button className={styles.pageBtn} onClick={() => setPage(totalPages)}>{totalPages}</button>
+                </>
+              )}
+              <button
+                className={styles.pageBtn}
+                onClick={() => setPage((p) => p + 1)}
+                disabled={page === totalPages}
+              >
+                ›
+              </button>
+            </div>
           </div>
         )}
       </main>
