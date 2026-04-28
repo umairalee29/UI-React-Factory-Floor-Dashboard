@@ -41,6 +41,7 @@ export default function Downtime(): JSX.Element {
 
   const [machineFilter, setMachineFilter] = useState('');
   const [dateFilter, setDateFilter] = useState('');
+  const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const PAGE_SIZE = 10;
 
@@ -56,8 +57,24 @@ export default function Downtime(): JSX.Element {
     setPage(1);
   }, [dispatch, machineFilter, dateFilter]);
 
-  const totalPages = Math.max(1, Math.ceil(logs.length / PAGE_SIZE));
-  const pagedLogs = logs.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  useEffect(() => { setPage(1); }, [search]);
+
+  const filteredLogs = search.trim()
+    ? logs.filter((log) => {
+        const q = search.toLowerCase();
+        return (
+          getMachineName(log).toLowerCase().includes(q) ||
+          (log.reason ?? '').toLowerCase().includes(q) ||
+          formatDate(log.started_at).toLowerCase().includes(q) ||
+          formatDate(log.ended_at).toLowerCase().includes(q) ||
+          formatDuration(log.duration_minutes).toLowerCase().includes(q) ||
+          getMachineShift(log).toLowerCase().includes(q)
+        );
+      })
+    : logs;
+
+  const totalPages = Math.max(1, Math.ceil(filteredLogs.length / PAGE_SIZE));
+  const pagedLogs = filteredLogs.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   function getPageNumbers(): number[] {
     const delta = 2;
@@ -74,7 +91,30 @@ export default function Downtime(): JSX.Element {
       <main className={styles.main}>
         <div className={styles.pageHeader}>
           <h2 className={styles.pageTitle}>Downtime Log</h2>
-          <span className={styles.count}>{logs.length} records</span>
+          <span className={styles.count}>
+            {search.trim() && filteredLogs.length !== logs.length
+              ? `${filteredLogs.length} of ${logs.length} records`
+              : `${logs.length} records`}
+          </span>
+        </div>
+
+        <div className={styles.searchRow}>
+          <div className={styles.searchWrap}>
+            <svg className={styles.searchIcon} viewBox="0 0 20 20" fill="none">
+              <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" strokeWidth="1.6"/>
+              <path d="M13 13l3.5 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+            </svg>
+            <input
+              className={styles.searchInput}
+              type="text"
+              placeholder="Search by machine, reason, date, shift…"
+              value={search}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+            />
+            {search && (
+              <button className={styles.searchClear} onClick={() => setSearch('')} aria-label="Clear search">✕</button>
+            )}
+          </div>
         </div>
 
         <div className={styles.filters}>
@@ -105,7 +145,7 @@ export default function Downtime(): JSX.Element {
           {(machineFilter || dateFilter) && (
             <button
               className={styles.clearBtn}
-              onClick={() => { setMachineFilter(''); setDateFilter(''); }}
+              onClick={() => { setMachineFilter(''); setDateFilter(''); setSearch(''); }}
             >
               Clear filters
             </button>
@@ -149,10 +189,10 @@ export default function Downtime(): JSX.Element {
           </div>
         )}
 
-        {!loading && logs.length > PAGE_SIZE && (
+        {!loading && filteredLogs.length > PAGE_SIZE && (
           <div className={styles.pagination}>
             <span className={styles.pageInfo}>
-              {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, logs.length)} of {logs.length}
+              {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filteredLogs.length)} of {filteredLogs.length}
             </span>
             <div className={styles.pageControls}>
               <button
