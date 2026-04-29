@@ -68,7 +68,7 @@ export default function ParetoChart(): JSX.Element {
                 angle: -90,
                 position: 'insideLeft',
                 offset: 4,
-                style: { fill: 'var(--text-muted)', fontSize: 10, fontFamily: 'var(--font-data)', textAnchor: 'middle' },
+                style: { fill: 'var(--text-secondary)', fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-data)', textAnchor: 'middle' },
               }}
             />
             <Tooltip content={<CustomTooltip />} />

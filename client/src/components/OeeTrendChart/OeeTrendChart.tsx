@@ -45,7 +45,7 @@ export default function OeeTrendChart(): JSX.Element {
                 value: 'Time',
                 position: 'insideBottom',
                 offset: -14,
-                style: { fill: 'var(--text-muted)', fontSize: 10, fontFamily: 'var(--font-data)', textAnchor: 'middle' },
+                style: { fill: 'var(--text-secondary)', fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-data)', textAnchor: 'middle' },
               }}
             />
             <YAxis
@@ -60,7 +60,7 @@ export default function OeeTrendChart(): JSX.Element {
                 angle: -90,
                 position: 'insideLeft',
                 offset: 4,
-                style: { fill: 'var(--text-muted)', fontSize: 10, fontFamily: 'var(--font-data)', textAnchor: 'middle' },
+                style: { fill: 'var(--text-secondary)', fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-data)', textAnchor: 'middle' },
               }}
             />
             <Tooltip content={<CustomTooltip />} />
