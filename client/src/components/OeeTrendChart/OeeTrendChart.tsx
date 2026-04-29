@@ -59,6 +59,7 @@ export default function OeeTrendChart(): JSX.Element {
               tick={{ fill: 'var(--text-muted)', fontSize: 11, fontFamily: 'var(--font-data)' }}
               axisLine={{ stroke: 'var(--border)' }}
               tickLine={false}
+              interval={oeeTrend.length > 10 ? 1 : 0}
               label={{
                 value: 'Time',
                 position: 'insideBottom',
