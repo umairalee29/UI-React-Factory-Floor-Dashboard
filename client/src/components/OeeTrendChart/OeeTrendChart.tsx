@@ -52,7 +52,7 @@ export default function OeeTrendChart(): JSX.Element {
         <p className={styles.empty}>Collecting data&hellip;</p>
       ) : (
         <ResponsiveContainer width="100%" height={220}>
-          <LineChart data={oeeTrend} margin={{ top: 8, right: 16, bottom: 28, left: 16 }}>
+          <LineChart data={oeeTrend} margin={{ top: 8, right: 16, bottom: 20, left: 16 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
             <XAxis
               dataKey="time"

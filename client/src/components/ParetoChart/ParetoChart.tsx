@@ -78,7 +78,7 @@ export default function ParetoChart(): JSX.Element {
         <p className={styles.empty}>No downtime data</p>
       ) : (
         <ResponsiveContainer width="100%" height={260}>
-          <BarChart data={data} margin={{ top: 8, right: 16, bottom: 75, left: 16 }}>
+          <BarChart data={data} margin={{ top: 8, right: 16, bottom: 60, left: 16 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={true} vertical={false} />
             <XAxis
               dataKey="reason"
