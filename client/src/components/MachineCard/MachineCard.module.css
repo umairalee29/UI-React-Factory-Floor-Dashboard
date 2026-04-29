@@ -19,6 +19,10 @@
   animation: pulse-fault 2s infinite, fade-in 300ms ease both;
 }
 
+.idle {
+  border-color: var(--status-idle) !important;
+}
+
 .header {
   display: flex;
   justify-content: space-between;

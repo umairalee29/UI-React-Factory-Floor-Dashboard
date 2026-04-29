@@ -11,7 +11,7 @@ export default function MachineCard({ machine }: Props): JSX.Element {
   const progress = target_count > 0 ? Math.min((output_count / target_count) * 100, 100) : 0;
 
   return (
-    <div className={`${styles.card} ${status === 'fault' ? styles.fault : ''}`}>
+    <div className={`${styles.card} ${status === 'fault' ? styles.fault : status === 'idle' ? styles.idle : ''}`}>
       <div className={styles.header}>
         <span className={styles.name}>{name}</span>
         <StatusBadge status={status} />
