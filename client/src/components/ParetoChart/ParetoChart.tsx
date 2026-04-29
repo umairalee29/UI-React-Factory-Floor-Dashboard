@@ -100,8 +100,21 @@ export default function ParetoChart(): JSX.Element {
                 style: { fill: 'var(--text-secondary)', fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-data)', textAnchor: 'middle' },
               }}
             />
-            <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="count" fill="var(--accent)" radius={[4, 4, 0, 0]} isAnimationActive={false} />
+            <Tooltip
+              content={<CustomTooltip />}
+              cursor={{ fill: '#232636', opacity: 0.5, radius: 4 }}
+            />
+            <Bar
+              dataKey="count"
+              fill="var(--accent)"
+              radius={[4, 4, 0, 0]}
+              isAnimationActive={false}
+              activeBar={{
+                fill: '#60a5fa',
+                stroke: '#93c5fd',
+                strokeWidth: 1.5,
+              }}
+            />
           </BarChart>
         </ResponsiveContainer>
       )}
