@@ -17,6 +17,37 @@ interface ParetoEntry {
   count: number;
 }
 
+interface TickProps {
+  x?: number;
+  y?: number;
+  payload?: { value: string };
+}
+
+function CustomXTick({ x = 0, y = 0, payload }: TickProps): JSX.Element {
+  if (!payload) return <g />;
+  const label: string = payload.value;
+  const words = label.split(' ');
+  const shouldSplit = label.length > 13 && words.length > 1;
+  const mid = Math.ceil(words.length / 2);
+  const line1 = shouldSplit ? words.slice(0, mid).join(' ') : label;
+  const line2 = shouldSplit ? words.slice(mid).join(' ') : '';
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <text
+        transform="rotate(-45)"
+        textAnchor="end"
+        fill="var(--text-secondary)"
+        fontSize={10}
+        fontWeight={700}
+        fontFamily="var(--font-data)"
+      >
+        <tspan x={0} dy="0.3em">{line1}</tspan>
+        {line2 && <tspan x={0} dy="1.2em">{line2}</tspan>}
+      </text>
+    </g>
+  );
+}
+
 function CustomTooltip({ active, payload, label }: TooltipProps<number, string>): JSX.Element | null {
   if (!active || !payload?.length) return null;
   return (
@@ -46,16 +77,14 @@ export default function ParetoChart(): JSX.Element {
       {data.length === 0 ? (
         <p className={styles.empty}>No downtime data</p>
       ) : (
-        <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={data} margin={{ top: 8, right: 16, bottom: 48, left: 16 }}>
+        <ResponsiveContainer width="100%" height={260}>
+          <BarChart data={data} margin={{ top: 8, right: 16, bottom: 75, left: 16 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={true} vertical={false} />
             <XAxis
               dataKey="reason"
-              tick={{ fill: 'var(--text-muted)', fontSize: 10, fontFamily: 'var(--font-ui)' }}
+              tick={<CustomXTick />}
               axisLine={{ stroke: 'var(--border)' }}
               tickLine={false}
-              angle={-35}
-              textAnchor="end"
               interval={0}
             />
             <YAxis

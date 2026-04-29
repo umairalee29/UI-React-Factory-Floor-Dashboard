@@ -74,7 +74,7 @@ export default function OeeTrendChart(): JSX.Element {
               tickFormatter={(v: number) => `${v}%`}
               width={52}
               label={{
-                value: 'Percentage',
+                value: 'Avg %',
                 angle: -90,
                 position: 'insideLeft',
                 offset: 4,
