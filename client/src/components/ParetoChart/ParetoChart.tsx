@@ -47,7 +47,7 @@ export default function ParetoChart(): JSX.Element {
         <p className={styles.empty}>No downtime data</p>
       ) : (
         <ResponsiveContainer width="100%" height={220}>
-          <BarChart data={data} margin={{ top: 8, right: 16, bottom: 48, left: 0 }}>
+          <BarChart data={data} margin={{ top: 8, right: 16, bottom: 48, left: 16 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={true} vertical={false} />
             <XAxis
               dataKey="reason"
@@ -62,7 +62,14 @@ export default function ParetoChart(): JSX.Element {
               tick={{ fill: 'var(--text-muted)', fontSize: 11, fontFamily: 'var(--font-data)' }}
               axisLine={false}
               tickLine={false}
-              width={32}
+              width={52}
+              label={{
+                value: 'Events',
+                angle: -90,
+                position: 'insideLeft',
+                offset: 4,
+                style: { fill: 'var(--text-muted)', fontSize: 10, fontFamily: 'var(--font-data)', textAnchor: 'middle' },
+              }}
             />
             <Tooltip content={<CustomTooltip />} />
             <Bar dataKey="count" fill="var(--accent)" radius={[4, 4, 0, 0]} isAnimationActive={false} />
