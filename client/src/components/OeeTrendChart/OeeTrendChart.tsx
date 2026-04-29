@@ -34,13 +34,19 @@ export default function OeeTrendChart(): JSX.Element {
         <p className={styles.empty}>Collecting data&hellip;</p>
       ) : (
         <ResponsiveContainer width="100%" height={220}>
-          <LineChart data={oeeTrend} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
+          <LineChart data={oeeTrend} margin={{ top: 8, right: 16, bottom: 28, left: 16 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
             <XAxis
               dataKey="time"
               tick={{ fill: 'var(--text-muted)', fontSize: 11, fontFamily: 'var(--font-data)' }}
               axisLine={{ stroke: 'var(--border)' }}
               tickLine={false}
+              label={{
+                value: 'Time',
+                position: 'insideBottom',
+                offset: -14,
+                style: { fill: 'var(--text-muted)', fontSize: 10, fontFamily: 'var(--font-data)', textAnchor: 'middle' },
+              }}
             />
             <YAxis
               domain={[60, 100]}
@@ -48,7 +54,14 @@ export default function OeeTrendChart(): JSX.Element {
               axisLine={false}
               tickLine={false}
               tickFormatter={(v: number) => `${v}%`}
-              width={42}
+              width={52}
+              label={{
+                value: 'Percentage',
+                angle: -90,
+                position: 'insideLeft',
+                offset: 4,
+                style: { fill: 'var(--text-muted)', fontSize: 10, fontFamily: 'var(--font-data)', textAnchor: 'middle' },
+              }}
             />
             <Tooltip content={<CustomTooltip />} />
             <ReferenceLine y={85} stroke="var(--accent)" strokeDasharray="4 4" strokeOpacity={0.4} />
