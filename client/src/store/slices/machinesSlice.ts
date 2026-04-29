@@ -25,6 +25,7 @@ function buildTrendPoint(machines: Machine[]): OeeTrendPoint {
   return {
     time: now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
     oee: Math.round(avg * 10) / 10,
+    machines: machines.map((m) => ({ name: m.name, status: m.status, oee: m.oee_score })),
   };
 }
 

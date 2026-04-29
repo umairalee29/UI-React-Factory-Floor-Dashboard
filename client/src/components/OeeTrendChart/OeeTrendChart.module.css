@@ -41,3 +41,48 @@
   font-weight: 600;
   color: var(--accent);
 }
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 8px 0 6px;
+}
+
+.machineList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.machineRow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.running { background: var(--status-running); }
+.idle    { background: var(--status-idle); }
+.fault   { background: var(--status-fault); }
+
+.machineName {
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  flex: 1;
+  min-width: 70px;
+}
+
+.machineOee {
+  font-family: var(--font-data);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}

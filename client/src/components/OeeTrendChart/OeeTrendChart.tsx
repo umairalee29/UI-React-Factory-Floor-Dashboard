@@ -11,15 +11,30 @@ import {
   TooltipProps,
 } from 'recharts';
 import type { RootState } from '../../store/index.js';
-import type { OeeTrendPoint } from '../../types.js';
+import type { OeeTrendPoint, MachineSnapshot } from '../../types.js';
 import styles from './OeeTrendChart.module.css';
 
 function CustomTooltip({ active, payload, label }: TooltipProps<number, string>): JSX.Element | null {
   if (!active || !payload?.length) return null;
+  const point = payload[0].payload as OeeTrendPoint;
   return (
     <div className={styles.tooltip}>
       <p className={styles.tooltipTime}>{label}</p>
-      <p className={styles.tooltipValue}>{payload[0].value}%</p>
+      <p className={styles.tooltipValue}>Avg {payload[0].value}%</p>
+      {point.machines?.length > 0 && (
+        <>
+          <div className={styles.divider} />
+          <ul className={styles.machineList}>
+            {point.machines.map((m: MachineSnapshot) => (
+              <li key={m.name} className={styles.machineRow}>
+                <span className={`${styles.statusDot} ${styles[m.status]}`} />
+                <span className={styles.machineName}>{m.name}</span>
+                <span className={styles.machineOee}>{m.oee}%</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
   );
 }

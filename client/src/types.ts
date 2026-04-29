@@ -45,9 +45,16 @@ export interface User {
   role: Role;
 }
 
+export interface MachineSnapshot {
+  name: string;
+  status: Status;
+  oee: number;
+}
+
 export interface OeeTrendPoint {
   time: string;
   oee: number;
+  machines: MachineSnapshot[];
 }
 
 export interface LoginCredentials {
