@@ -17,15 +17,18 @@ import styles from './OeeTrendChart.module.css';
 function CustomTooltip({ active, payload, label }: TooltipProps<number, string>): JSX.Element | null {
   if (!active || !payload?.length) return null;
   const point = payload[0].payload as OeeTrendPoint;
+  const top5 = point.machines
+    ? [...point.machines].sort((a, b) => b.oee - a.oee).slice(0, 5)
+    : [];
   return (
     <div className={styles.tooltip}>
       <p className={styles.tooltipTime}>{label}</p>
       <p className={styles.tooltipValue}>Avg {payload[0].value}%</p>
-      {point.machines?.length > 0 && (
+      {top5.length > 0 && (
         <>
           <div className={styles.divider} />
           <ul className={styles.machineList}>
-            {point.machines.map((m: MachineSnapshot) => (
+            {top5.map((m: MachineSnapshot) => (
               <li key={m.name} className={styles.machineRow}>
                 <span className={`${styles.statusDot} ${styles[m.status]}`} />
                 <span className={styles.machineName}>{m.name}</span>
