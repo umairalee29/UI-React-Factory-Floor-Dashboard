@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ChangeEvent } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
@@ -41,6 +41,8 @@ export default function Shifts(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const { summaries, loading } = useSelector((s: RootState) => s.shifts);
 
+  const [shiftFilter, setShiftFilter] = useState<Shift | ''>('');
+  const [dateFilter, setDateFilter] = useState('');
   const [sortCol, setSortCol] = useState<SortCol | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [page, setPage] = useState(1);
@@ -57,9 +59,17 @@ export default function Shifts(): JSX.Element {
     setPage(1);
   }
 
+  function clearFilters(): void {
+    setShiftFilter('');
+    setDateFilter('');
+    setPage(1);
+  }
+
   useEffect(() => {
     dispatch(fetchShifts());
   }, [dispatch]);
+
+  useEffect(() => { setPage(1); }, [shiftFilter, dateFilter]);
 
   const byDate: Record<string, ChartRow> = {};
   summaries.forEach((s) => {
@@ -76,8 +86,17 @@ export default function Shifts(): JSX.Element {
 
   const shifts: Shift[] = ['morning', 'afternoon', 'night'];
 
+  const filteredSummaries = summaries.filter((s) => {
+    if (shiftFilter && s.shift !== shiftFilter) return false;
+    if (dateFilter) {
+      const rowDate = new Date(s.date).toISOString().slice(0, 10);
+      if (rowDate !== dateFilter) return false;
+    }
+    return true;
+  });
+
   const sortedSummaries = sortCol
-    ? [...summaries].sort((a, b) => {
+    ? [...filteredSummaries].sort((a, b) => {
         let va: string | number = '';
         let vb: string | number = '';
         switch (sortCol) {
@@ -91,7 +110,7 @@ export default function Shifts(): JSX.Element {
         if (va > vb) return sortDir === 'asc' ?  1 : -1;
         return 0;
       })
-    : summaries;
+    : filteredSummaries;
 
   const totalPages = Math.max(1, Math.ceil(sortedSummaries.length / PAGE_SIZE));
   const pagedSummaries = sortedSummaries.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -112,6 +131,8 @@ export default function Shifts(): JSX.Element {
     { col: 'machines', label: 'Machines' },
     { col: 'faults',   label: 'Faults'   },
   ];
+
+  const hasFilters = shiftFilter || dateFilter;
 
   return (
     <div className={styles.layout}>
@@ -201,40 +222,89 @@ export default function Shifts(): JSX.Element {
               </ResponsiveContainer>
             </div>
 
-            <div className={styles.tableWrap}>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    {COLUMNS.map(({ col, label }) => (
-                      <th
-                        key={col}
-                        className={`${styles.thSortable}${sortCol === col ? ` ${styles.thActive}` : ''}`}
-                        onClick={() => handleSort(col)}
-                      >
-                        <span className={styles.thContent}>
-                          {label}
-                          <SortIcon col={col} sortCol={sortCol} sortDir={sortDir} />
-                        </span>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {pagedSummaries.map((s) => (
-                    <tr key={s._id}>
-                      <td className={styles.mono}>
-                        {new Date(s.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                      </td>
-                      <td className={styles.shiftCell} style={{ color: SHIFT_COLORS[s.shift] }}>{s.shift}</td>
-                      <td className={styles.mono}>{s.total_oee?.toFixed(1)}%</td>
-                      <td className={styles.mono}>{s.machines_count}</td>
-                      <td className={`${styles.mono} ${s.faults_count > 0 ? styles.faultText : ''}`}>
-                        {s.faults_count}
-                      </td>
+            <div className={styles.tableSection}>
+              <div className={styles.tableHeader}>
+                <div className={styles.tableHeaderLeft}>
+                  <span className={styles.tableCount}>
+                    {hasFilters && filteredSummaries.length !== summaries.length
+                      ? `${filteredSummaries.length} of ${summaries.length} records`
+                      : `${summaries.length} records`}
+                  </span>
+                </div>
+                <div className={styles.filters}>
+                  <div className={styles.filterField}>
+                    <label className={styles.filterLabel}>Shift</label>
+                    <select
+                      className={styles.select}
+                      value={shiftFilter}
+                      onChange={(e: ChangeEvent<HTMLSelectElement>) => setShiftFilter(e.target.value as Shift | '')}
+                    >
+                      <option value="">All shifts</option>
+                      <option value="morning">Morning</option>
+                      <option value="afternoon">Afternoon</option>
+                      <option value="night">Night</option>
+                    </select>
+                  </div>
+
+                  <div className={styles.filterField}>
+                    <label className={styles.filterLabel}>Date</label>
+                    <input
+                      className={styles.input}
+                      type="date"
+                      value={dateFilter}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) => setDateFilter(e.target.value)}
+                    />
+                  </div>
+
+                  {hasFilters && (
+                    <button className={styles.clearBtn} onClick={clearFilters}>
+                      Clear filters
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.tableWrap}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      {COLUMNS.map(({ col, label }) => (
+                        <th
+                          key={col}
+                          className={`${styles.thSortable}${sortCol === col ? ` ${styles.thActive}` : ''}`}
+                          onClick={() => handleSort(col)}
+                        >
+                          <span className={styles.thContent}>
+                            {label}
+                            <SortIcon col={col} sortCol={sortCol} sortDir={sortDir} />
+                          </span>
+                        </th>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {pagedSummaries.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className={styles.empty}>No records found</td>
+                      </tr>
+                    ) : (
+                      pagedSummaries.map((s) => (
+                        <tr key={s._id}>
+                          <td className={styles.mono}>
+                            {new Date(s.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </td>
+                          <td className={styles.shiftCell} style={{ color: SHIFT_COLORS[s.shift] }}>{s.shift}</td>
+                          <td className={styles.mono}>{s.total_oee?.toFixed(1)}%</td>
+                          <td className={styles.mono}>{s.machines_count}</td>
+                          <td className={`${styles.mono} ${s.faults_count > 0 ? styles.faultText : ''}`}>
+                            {s.faults_count}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             {sortedSummaries.length > PAGE_SIZE && (

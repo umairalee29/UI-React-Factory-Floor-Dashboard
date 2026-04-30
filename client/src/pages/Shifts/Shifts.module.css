@@ -94,6 +94,134 @@
   margin-bottom: 16px;
 }
 
+/* ── Table section ─────────────────────────────────────────────────────────── */
+
+.tableSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tableHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.tableHeaderLeft {
+  display: flex;
+  align-items: center;
+}
+
+.tableCount {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-family: var(--font-data);
+}
+
+.filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filterField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filterLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+
+.select,
+.input {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  padding: 0 12px;
+  height: 36px;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color var(--transition);
+  min-width: 140px;
+  box-sizing: border-box;
+}
+
+.select:focus,
+.input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+/* ── Date picker ─────────────────────────────────────────────────────────── */
+
+.input[type="date"] {
+  color-scheme: dark;
+  accent-color: #3b82f6;
+  cursor: pointer;
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+}
+
+.input[type="date"]:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-elevated);
+}
+
+.input[type="date"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18), 0 0 12px rgba(59, 130, 246, 0.12);
+  background: var(--bg-elevated);
+}
+
+.input[type="date"]::-webkit-calendar-picker-indicator {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Crect x='1.5' y='3.5' width='13' height='11' rx='1.5' stroke='%233b82f6' stroke-width='1.4'/%3E%3Cpath d='M1.5 7h13' stroke='%233b82f6' stroke-width='1.4'/%3E%3Cpath d='M5 1.5v3M11 1.5v3' stroke='%233b82f6' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-size: 14px 14px;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 22px;
+  height: 22px;
+  opacity: 1;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition), transform var(--transition);
+  margin-left: 2px;
+}
+
+.input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  background-color: rgba(59, 130, 246, 0.15);
+  transform: scale(1.1);
+}
+
+.clearBtn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  padding: 0 16px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  font-size: 0.82rem;
+  transition: background var(--transition), color var(--transition);
+  align-self: flex-end;
+  white-space: nowrap;
+}
+
+.clearBtn:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+/* ── Table ─────────────────────────────────────────────────────────────────── */
+
 .tableWrap {
   background: var(--bg-surface);
   border: 1px solid var(--border);
@@ -180,12 +308,20 @@
   text-transform: capitalize;
 }
 
+.empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 40px !important;
+}
+
 .loading {
   color: var(--text-muted);
   font-size: 0.9rem;
   text-align: center;
   padding: 48px;
 }
+
+/* ── Pagination ─────────────────────────────────────────────────────────── */
 
 .pagination {
   display: flex;
@@ -250,7 +386,33 @@
   user-select: none;
 }
 
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+
 @media (max-width: 700px) {
   .shiftCards { grid-template-columns: 1fr; }
+
+  .tableHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filterField { width: 100%; }
+
+  .select,
+  .input {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .clearBtn {
+    width: 100%;
+    text-align: center;
+  }
+
   .pagination { flex-direction: column; align-items: center; }
 }
