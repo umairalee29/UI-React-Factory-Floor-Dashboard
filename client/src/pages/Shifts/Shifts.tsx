@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
@@ -45,6 +45,20 @@ export default function Shifts(): JSX.Element {
   });
 
   const shifts: Shift[] = ['morning', 'afternoon', 'night'];
+
+  const PAGE_SIZE = 10;
+  const [page, setPage] = useState(1);
+  const totalPages = Math.max(1, Math.ceil(summaries.length / PAGE_SIZE));
+  const pagedSummaries = summaries.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  function getPageNumbers(): number[] {
+    const delta = 2;
+    const range: number[] = [];
+    for (let i = Math.max(1, page - delta); i <= Math.min(totalPages, page + delta); i++) {
+      range.push(i);
+    }
+    return range;
+  }
 
   return (
     <div className={styles.layout}>
@@ -142,7 +156,7 @@ export default function Shifts(): JSX.Element {
                   </tr>
                 </thead>
                 <tbody>
-                  {summaries.map((s) => (
+                  {pagedSummaries.map((s) => (
                     <tr key={s._id}>
                       <td className={styles.mono}>
                         {new Date(s.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -158,6 +172,39 @@ export default function Shifts(): JSX.Element {
                 </tbody>
               </table>
             </div>
+
+            {summaries.length > PAGE_SIZE && (
+              <div className={styles.pagination}>
+                <span className={styles.pageInfo}>
+                  {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, summaries.length)} of {summaries.length}
+                </span>
+                <div className={styles.pageControls}>
+                  <button className={styles.pageBtn} onClick={() => setPage((p) => p - 1)} disabled={page === 1}>‹</button>
+                  {page > 3 && (
+                    <>
+                      <button className={styles.pageBtn} onClick={() => setPage(1)}>1</button>
+                      {page > 4 && <span className={styles.ellipsis}>…</span>}
+                    </>
+                  )}
+                  {getPageNumbers().map((n) => (
+                    <button
+                      key={n}
+                      className={`${styles.pageBtn}${n === page ? ` ${styles.pageBtnActive}` : ''}`}
+                      onClick={() => setPage(n)}
+                    >
+                      {n}
+                    </button>
+                  ))}
+                  {page < totalPages - 2 && (
+                    <>
+                      {page < totalPages - 3 && <span className={styles.ellipsis}>…</span>}
+                      <button className={styles.pageBtn} onClick={() => setPage(totalPages)}>{totalPages}</button>
+                    </>
+                  )}
+                  <button className={styles.pageBtn} onClick={() => setPage((p) => p + 1)} disabled={page === totalPages}>›</button>
+                </div>
+              </div>
+            )}
           </>
         )}
       </main>
