@@ -23,9 +23,39 @@ interface ChartRow {
   night?: number;
 }
 
+type SortCol = 'date' | 'shift' | 'oee' | 'machines' | 'faults';
+type SortDir = 'asc' | 'desc';
+
+function SortIcon({ col, sortCol, sortDir }: { col: SortCol; sortCol: SortCol | null; sortDir: SortDir }): JSX.Element {
+  const upActive   = sortCol === col && sortDir === 'asc';
+  const downActive = sortCol === col && sortDir === 'desc';
+  return (
+    <svg className={styles.sortIcon} viewBox="0 0 8 13" fill="none">
+      <path d="M4 1L1 5.5h6L4 1z"  className={upActive   ? styles.arrowActive : styles.arrowIdle} />
+      <path d="M4 12L1 7.5h6L4 12z" className={downActive ? styles.arrowActive : styles.arrowIdle} />
+    </svg>
+  );
+}
+
 export default function Shifts(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const { summaries, loading } = useSelector((s: RootState) => s.shifts);
+
+  const [sortCol, setSortCol] = useState<SortCol | null>(null);
+  const [sortDir, setSortDir] = useState<SortDir>('asc');
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 10;
+
+  function handleSort(col: SortCol): void {
+    if (sortCol === col) {
+      if (sortDir === 'asc') { setSortDir('desc'); }
+      else { setSortCol(null); setSortDir('asc'); }
+    } else {
+      setSortCol(col);
+      setSortDir('asc');
+    }
+    setPage(1);
+  }
 
   useEffect(() => {
     dispatch(fetchShifts());
@@ -46,10 +76,25 @@ export default function Shifts(): JSX.Element {
 
   const shifts: Shift[] = ['morning', 'afternoon', 'night'];
 
-  const PAGE_SIZE = 10;
-  const [page, setPage] = useState(1);
-  const totalPages = Math.max(1, Math.ceil(summaries.length / PAGE_SIZE));
-  const pagedSummaries = summaries.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const sortedSummaries = sortCol
+    ? [...summaries].sort((a, b) => {
+        let va: string | number = '';
+        let vb: string | number = '';
+        switch (sortCol) {
+          case 'date':     va = new Date(a.date).getTime(); vb = new Date(b.date).getTime(); break;
+          case 'shift':    va = a.shift;          vb = b.shift;          break;
+          case 'oee':      va = a.total_oee ?? 0; vb = b.total_oee ?? 0; break;
+          case 'machines': va = a.machines_count; vb = b.machines_count; break;
+          case 'faults':   va = a.faults_count;   vb = b.faults_count;   break;
+        }
+        if (va < vb) return sortDir === 'asc' ? -1 : 1;
+        if (va > vb) return sortDir === 'asc' ?  1 : -1;
+        return 0;
+      })
+    : summaries;
+
+  const totalPages = Math.max(1, Math.ceil(sortedSummaries.length / PAGE_SIZE));
+  const pagedSummaries = sortedSummaries.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   function getPageNumbers(): number[] {
     const delta = 2;
@@ -59,6 +104,14 @@ export default function Shifts(): JSX.Element {
     }
     return range;
   }
+
+  const COLUMNS: { col: SortCol; label: string }[] = [
+    { col: 'date',     label: 'Date'     },
+    { col: 'shift',    label: 'Shift'    },
+    { col: 'oee',      label: 'OEE %'    },
+    { col: 'machines', label: 'Machines' },
+    { col: 'faults',   label: 'Faults'   },
+  ];
 
   return (
     <div className={styles.layout}>
@@ -152,7 +205,18 @@ export default function Shifts(): JSX.Element {
               <table className={styles.table}>
                 <thead>
                   <tr>
-                    <th>Date</th><th>Shift</th><th>OEE %</th><th>Machines</th><th>Faults</th>
+                    {COLUMNS.map(({ col, label }) => (
+                      <th
+                        key={col}
+                        className={`${styles.thSortable}${sortCol === col ? ` ${styles.thActive}` : ''}`}
+                        onClick={() => handleSort(col)}
+                      >
+                        <span className={styles.thContent}>
+                          {label}
+                          <SortIcon col={col} sortCol={sortCol} sortDir={sortDir} />
+                        </span>
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
@@ -173,10 +237,10 @@ export default function Shifts(): JSX.Element {
               </table>
             </div>
 
-            {summaries.length > PAGE_SIZE && (
+            {sortedSummaries.length > PAGE_SIZE && (
               <div className={styles.pagination}>
                 <span className={styles.pageInfo}>
-                  {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, summaries.length)} of {summaries.length}
+                  {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, sortedSummaries.length)} of {sortedSummaries.length}
                 </span>
                 <div className={styles.pageControls}>
                   <button className={styles.pageBtn} onClick={() => setPage((p) => p - 1)} disabled={page === 1}>‹</button>

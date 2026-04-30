@@ -117,6 +117,43 @@
   text-transform: uppercase;
   color: var(--text-muted);
   border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.thSortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--transition);
+}
+
+.thSortable:hover {
+  background: var(--bg-elevated);
+}
+
+.thActive {
+  color: var(--accent) !important;
+}
+
+.thContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.sortIcon {
+  width: 8px;
+  height: 13px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.arrowActive {
+  fill: var(--accent);
+}
+
+.arrowIdle {
+  fill: currentColor;
+  opacity: 0.3;
 }
 
 .table td {
