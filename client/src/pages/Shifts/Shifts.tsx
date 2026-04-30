@@ -104,12 +104,19 @@ export default function Shifts(): JSX.Element {
                       fontFamily: 'var(--font-ui)',
                       fontSize: '0.82rem',
                     }}
+                    cursor={{ fill: '#232636', opacity: 0.5, radius: 4 }}
                     formatter={(v: number, name: string) => [`${v?.toFixed(1)}%`, name]}
                   />
                   <Legend wrapperStyle={{ fontSize: '0.78rem', paddingTop: '12px' }} />
-                  <Bar dataKey="morning" fill={SHIFT_COLORS.morning} radius={[3, 3, 0, 0]} name="Morning" />
-                  <Bar dataKey="afternoon" fill={SHIFT_COLORS.afternoon} radius={[3, 3, 0, 0]} name="Afternoon" />
-                  <Bar dataKey="night" fill={SHIFT_COLORS.night} radius={[3, 3, 0, 0]} name="Night" />
+                  <Bar dataKey="morning" fill={SHIFT_COLORS.morning} radius={[3, 3, 0, 0]} name="Morning"
+                    activeBar={{ fill: '#fbbf24', stroke: '#fcd34d', strokeWidth: 1.5 }}
+                  />
+                  <Bar dataKey="afternoon" fill={SHIFT_COLORS.afternoon} radius={[3, 3, 0, 0]} name="Afternoon"
+                    activeBar={{ fill: '#60a5fa', stroke: '#93c5fd', strokeWidth: 1.5 }}
+                  />
+                  <Bar dataKey="night" fill={SHIFT_COLORS.night} radius={[3, 3, 0, 0]} name="Night"
+                    activeBar={{ fill: '#c084fc', stroke: '#d8b4fe', strokeWidth: 1.5 }}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </div>
