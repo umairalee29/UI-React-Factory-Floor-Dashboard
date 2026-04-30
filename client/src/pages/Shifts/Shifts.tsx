@@ -80,13 +80,19 @@ export default function Shifts(): JSX.Element {
             <div className={styles.chartContainer}>
               <h3 className={styles.chartTitle}>7-Day OEE by Shift</h3>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={chartData} margin={{ top: 8, right: 16, bottom: 0, left: 0 }}>
+                <BarChart data={chartData} margin={{ top: 8, right: 16, bottom: 28, left: 16 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                   <XAxis
                     dataKey="date"
                     tick={{ fill: 'var(--text-muted)', fontSize: 11, fontFamily: 'var(--font-ui)' }}
                     axisLine={{ stroke: 'var(--border)' }}
                     tickLine={false}
+                    label={{
+                      value: 'Date',
+                      position: 'insideBottom',
+                      offset: -14,
+                      style: { fill: 'var(--text-secondary)', fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-data)', textAnchor: 'middle' },
+                    }}
                   />
                   <YAxis
                     domain={[60, 100]}
@@ -94,7 +100,14 @@ export default function Shifts(): JSX.Element {
                     axisLine={false}
                     tickLine={false}
                     tickFormatter={(v: number) => `${v}%`}
-                    width={42}
+                    width={52}
+                    label={{
+                      value: 'OEE %',
+                      angle: -90,
+                      position: 'insideLeft',
+                      offset: 4,
+                      style: { fill: 'var(--text-secondary)', fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-data)', textAnchor: 'middle' },
+                    }}
                   />
                   <Tooltip
                     contentStyle={{
