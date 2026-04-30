@@ -80,7 +80,7 @@ export default function Shifts(): JSX.Element {
             <div className={styles.chartContainer}>
               <h3 className={styles.chartTitle}>7-Day OEE by Shift</h3>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={chartData} margin={{ top: 8, right: 16, bottom: 28, left: 16 }}>
+                <BarChart data={chartData} margin={{ top: 8, right: 16, bottom: 20, left: 16 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                   <XAxis
                     dataKey="date"
@@ -120,7 +120,7 @@ export default function Shifts(): JSX.Element {
                     cursor={{ fill: '#232636', opacity: 0.5, radius: 4 }}
                     formatter={(v: number, name: string) => [`${v?.toFixed(1)}%`, name]}
                   />
-                  <Legend wrapperStyle={{ fontSize: '0.78rem', paddingTop: '12px' }} />
+                  <Legend wrapperStyle={{ fontSize: '0.78rem', paddingTop: '24px' }} />
                   <Bar dataKey="morning" fill={SHIFT_COLORS.morning} radius={[3, 3, 0, 0]} name="Morning"
                     activeBar={{ fill: '#fbbf24', stroke: '#fcd34d', strokeWidth: 1.5 }}
                   />
