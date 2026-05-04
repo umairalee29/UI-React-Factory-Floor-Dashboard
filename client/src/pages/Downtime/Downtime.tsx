@@ -49,6 +49,149 @@ function getMachineShift(log: DowntimeLog): string {
   return (log.machine_id as MachineSummary).shift || '—';
 }
 
+/* ── Edit Modal ─────────────────────────────────────────────────────────── */
+
+function EditModal({ log, onClose }: { log: DowntimeLog; onClose: () => void }): JSX.Element {
+  useEffect(() => {
+    const handle = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handle);
+    return () => window.removeEventListener('keydown', handle);
+  }, [onClose]);
+
+  return (
+    <div className={styles.modalBackdrop} onClick={onClose}>
+      <div className={styles.actionModal} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+        <div className={styles.actionModalHeader}>
+          <span className={styles.actionModalTitle}>Edit Downtime Entry</span>
+          <button className={styles.actionModalClose} onClick={onClose} aria-label="Close">
+            <svg viewBox="0 0 16 16" fill="none" width="13" height="13">
+              <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+
+        <div className={styles.editForm}>
+          <div className={styles.editRow}>
+            <div className={styles.editField}>
+              <label className={styles.editLabel}>Machine</label>
+              <input className={styles.editInput} type="text" defaultValue={getMachineName(log)} readOnly />
+            </div>
+            <div className={styles.editField}>
+              <label className={styles.editLabel}>Shift</label>
+              <input className={styles.editInput} type="text" defaultValue={getMachineShift(log)} readOnly style={{ textTransform: 'capitalize' }} />
+            </div>
+          </div>
+          <div className={styles.editField}>
+            <label className={styles.editLabel}>Reason</label>
+            <textarea className={styles.editTextarea} defaultValue={log.reason || ''} readOnly rows={3} />
+          </div>
+          <div className={styles.editRow}>
+            <div className={styles.editField}>
+              <label className={styles.editLabel}>Started At</label>
+              <input className={styles.editInput} type="text" defaultValue={formatDate(log.started_at)} readOnly />
+            </div>
+            <div className={styles.editField}>
+              <label className={styles.editLabel}>Ended At</label>
+              <input className={styles.editInput} type="text" defaultValue={formatDate(log.ended_at)} readOnly />
+            </div>
+          </div>
+          <div className={styles.editField}>
+            <label className={styles.editLabel}>Duration</label>
+            <input className={styles.editInput} type="text" defaultValue={formatDuration(log.duration_minutes)} readOnly style={{ width: '50%' }} />
+          </div>
+        </div>
+
+        <div className={styles.comingSoonBanner}>
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" style={{ flexShrink: 0, marginTop: 1 }}>
+            <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+          </svg>
+          <p>Backend integration coming soon. Full editing will be available in a future update.</p>
+        </div>
+
+        <div className={styles.actionModalFooter}>
+          <button className={styles.btnCancel} onClick={onClose}>Cancel</button>
+          <button className={styles.btnSave} disabled>Save Changes</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Delete Modal ───────────────────────────────────────────────────────── */
+
+function DeleteModal({ log, onClose }: { log: DowntimeLog; onClose: () => void }): JSX.Element {
+  const [confirmed, setConfirmed] = useState(false);
+
+  useEffect(() => {
+    const handle = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handle);
+    return () => window.removeEventListener('keydown', handle);
+  }, [onClose]);
+
+  return (
+    <div className={styles.modalBackdrop} onClick={onClose}>
+      <div className={styles.actionModal} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+        {confirmed ? (
+          <>
+            <div className={styles.actionModalHeader}>
+              <span className={styles.actionModalTitle}>Feature Under Development</span>
+            </div>
+            <div className={styles.devNotice}>
+              <div className={styles.devNoticeIcon}>
+                <svg viewBox="0 0 24 24" fill="none" width="32" height="32">
+                  <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z" stroke="var(--accent)" strokeWidth="1.5" />
+                  <path d="M12 7v5" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" />
+                  <circle cx="12" cy="16" r="1" fill="var(--accent)" />
+                </svg>
+              </div>
+              <p className={styles.devNoticeText}>
+                This action is not yet connected to the backend.
+                <br />No data was deleted.
+              </p>
+              <p className={styles.devNoticeSubtext}>
+                Delete functionality will be available once backend integration is complete.
+              </p>
+            </div>
+            <div className={styles.actionModalFooter} style={{ justifyContent: 'flex-end' }}>
+              <button className={styles.btnCancel} onClick={onClose}>Close</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className={styles.actionModalHeader}>
+              <span className={styles.actionModalTitle}>Delete Entry</span>
+              <button className={styles.actionModalClose} onClick={onClose} aria-label="Close">
+                <svg viewBox="0 0 16 16" fill="none" width="13" height="13">
+                  <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
+
+            <p className={styles.deleteQuestion}>
+              Are you sure you want to delete this downtime record? This action cannot be undone.
+            </p>
+
+            <div className={styles.deleteContext}>
+              <span className={styles.deleteContextMachine}>{getMachineName(log)}</span>
+              <span className={styles.deleteContextReason}>{log.reason}</span>
+              <span className={styles.deleteContextMeta}>
+                {formatDate(log.started_at)} · {formatDuration(log.duration_minutes)}
+              </span>
+            </div>
+
+            <div className={styles.actionModalFooter}>
+              <button className={styles.btnCancel} onClick={onClose}>Cancel</button>
+              <button className={styles.btnDelete} onClick={() => setConfirmed(true)}>Delete</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── Page ───────────────────────────────────────────────────────────────── */
+
 export default function Downtime(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const { logs, loading } = useSelector((s: RootState) => s.downtime);
@@ -61,6 +204,8 @@ export default function Downtime(): JSX.Element {
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [page, setPage] = useState(1);
   const [selectedLog, setSelectedLog] = useState<DowntimeLog | null>(null);
+  const [editLog, setEditLog]     = useState<DowntimeLog | null>(null);
+  const [deleteLog, setDeleteLog] = useState<DowntimeLog | null>(null);
   const PAGE_SIZE = 10;
 
   function handleSort(col: SortCol): void {
@@ -230,12 +375,13 @@ export default function Downtime(): JSX.Element {
                       </span>
                     </th>
                   ))}
+                  <th className={styles.thActions}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {pagedLogs.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className={styles.empty}>No records found</td>
+                    <td colSpan={7} className={styles.empty}>No records found</td>
                   </tr>
                 ) : (
                   pagedLogs.map((log) => (
@@ -246,6 +392,30 @@ export default function Downtime(): JSX.Element {
                       <td className={styles.mono}>{formatDate(log.ended_at)}</td>
                       <td className={styles.mono}>{formatDuration(log.duration_minutes)}</td>
                       <td className={styles.shift}>{getMachineShift(log)}</td>
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <div className={styles.actionBtns}>
+                          <button
+                            className={styles.editBtn}
+                            onClick={() => setEditLog(log)}
+                            aria-label="Edit entry"
+                            title="Edit"
+                          >
+                            <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+                              <path d="M11.5 2.5a1.414 1.414 0 012 2L5 13H3v-2L11.5 2.5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+                            </svg>
+                          </button>
+                          <button
+                            className={styles.deleteBtn}
+                            onClick={() => setDeleteLog(log)}
+                            aria-label="Delete entry"
+                            title="Delete"
+                          >
+                            <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+                              <path d="M2 4h12M6 4V2h4v2M5 4v9a1 1 0 001 1h4a1 1 0 001-1V4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))
                 )}
@@ -302,6 +472,12 @@ export default function Downtime(): JSX.Element {
 
       {selectedLog && (
         <DowntimeModal log={selectedLog} onClose={() => setSelectedLog(null)} />
+      )}
+      {editLog && (
+        <EditModal log={editLog} onClose={() => setEditLog(null)} />
+      )}
+      {deleteLog && (
+        <DeleteModal log={deleteLog} onClose={() => setDeleteLog(null)} />
       )}
     </div>
   );
