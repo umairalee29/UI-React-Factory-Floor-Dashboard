@@ -127,10 +127,6 @@ export default function ShiftModal({ summary, onClose }: Props): JSX.Element {
           </div>
         </div>
 
-        {/* Footer */}
-        <div className={styles.footer}>
-          Record ID: {summary._id}
-        </div>
       </div>
     </div>
   );
