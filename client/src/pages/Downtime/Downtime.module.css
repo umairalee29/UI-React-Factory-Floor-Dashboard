@@ -275,7 +275,7 @@
 .machineName {
   font-family: var(--font-data) !important;
   font-weight: 600 !important;
-  color: var(--text-primary) !important;
+  color: var(--text-secondary) !important;
 }
 
 .mono {

@@ -37,6 +37,166 @@ function SortIcon({ col, sortCol, sortDir }: { col: SortCol; sortCol: SortCol | 
   );
 }
 
+function formatDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+/* ── Edit Modal ─────────────────────────────────────────────────────────── */
+
+function EditModal({ summary, onClose }: { summary: ShiftSummary; onClose: () => void }): JSX.Element {
+  useEffect(() => {
+    const handle = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handle);
+    return () => window.removeEventListener('keydown', handle);
+  }, [onClose]);
+
+  return (
+    <div className={styles.modalBackdrop} onClick={onClose}>
+      <div className={styles.actionModal} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+        <div className={styles.actionModalHeader}>
+          <span className={styles.actionModalTitle}>Edit Shift Entry</span>
+          <button className={styles.actionModalClose} onClick={onClose} aria-label="Close">
+            <svg viewBox="0 0 16 16" fill="none" width="13" height="13">
+              <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+
+        <div className={styles.editForm}>
+          <div className={styles.editRow}>
+            <div className={styles.editField}>
+              <label className={styles.editLabel}>Date</label>
+              <input className={styles.editInput} type="text" defaultValue={formatDate(summary.date)} readOnly />
+            </div>
+            <div className={styles.editField}>
+              <label className={styles.editLabel}>Shift</label>
+              <input
+                className={styles.editInput}
+                type="text"
+                defaultValue={summary.shift}
+                readOnly
+                style={{ textTransform: 'capitalize', color: SHIFT_COLORS[summary.shift], fontWeight: 600 }}
+              />
+            </div>
+          </div>
+          <div className={styles.editRow}>
+            <div className={styles.editField}>
+              <label className={styles.editLabel}>OEE %</label>
+              <input className={styles.editInput} type="text" defaultValue={`${summary.total_oee?.toFixed(1)}%`} readOnly />
+            </div>
+            <div className={styles.editField}>
+              <label className={styles.editLabel}>Machines</label>
+              <input className={styles.editInput} type="text" defaultValue={summary.machines_count} readOnly />
+            </div>
+          </div>
+          <div className={styles.editField}>
+            <label className={styles.editLabel}>Faults</label>
+            <input
+              className={styles.editInput}
+              type="text"
+              defaultValue={summary.faults_count}
+              readOnly
+              style={{ width: '50%', color: summary.faults_count > 0 ? 'var(--status-fault)' : undefined }}
+            />
+          </div>
+        </div>
+
+        <div className={styles.comingSoonBanner}>
+          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" style={{ flexShrink: 0, marginTop: 1 }}>
+            <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+          </svg>
+          <p>Backend integration coming soon. Full editing will be available in a future update.</p>
+        </div>
+
+        <div className={styles.actionModalFooter}>
+          <button className={styles.btnCancel} onClick={onClose}>Cancel</button>
+          <button className={styles.btnSave} disabled>Save Changes</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Delete Modal ───────────────────────────────────────────────────────── */
+
+function DeleteModal({ summary, onClose }: { summary: ShiftSummary; onClose: () => void }): JSX.Element {
+  const [confirmed, setConfirmed] = useState(false);
+
+  useEffect(() => {
+    const handle = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handle);
+    return () => window.removeEventListener('keydown', handle);
+  }, [onClose]);
+
+  return (
+    <div className={styles.modalBackdrop} onClick={onClose}>
+      <div className={styles.actionModal} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+        {confirmed ? (
+          <>
+            <div className={styles.actionModalHeader}>
+              <span className={styles.actionModalTitle}>Feature Under Development</span>
+            </div>
+            <div className={styles.devNotice}>
+              <div className={styles.devNoticeIcon}>
+                <svg viewBox="0 0 24 24" fill="none" width="32" height="32">
+                  <path d="M12 2a10 10 0 100 20A10 10 0 0012 2z" stroke="var(--accent)" strokeWidth="1.5" />
+                  <path d="M12 7v5" stroke="var(--accent)" strokeWidth="2" strokeLinecap="round" />
+                  <circle cx="12" cy="16" r="1" fill="var(--accent)" />
+                </svg>
+              </div>
+              <p className={styles.devNoticeText}>
+                This action is not yet connected to the backend.
+                <br />No data was deleted.
+              </p>
+              <p className={styles.devNoticeSubtext}>
+                Delete functionality will be available once backend integration is complete.
+              </p>
+            </div>
+            <div className={styles.actionModalFooter} style={{ justifyContent: 'flex-end' }}>
+              <button className={styles.btnCancel} onClick={onClose}>Close</button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className={styles.actionModalHeader}>
+              <span className={styles.actionModalTitle}>Delete Entry</span>
+              <button className={styles.actionModalClose} onClick={onClose} aria-label="Close">
+                <svg viewBox="0 0 16 16" fill="none" width="13" height="13">
+                  <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                </svg>
+              </button>
+            </div>
+
+            <p className={styles.deleteQuestion}>
+              Are you sure you want to delete this shift record? This action cannot be undone.
+            </p>
+
+            <div className={styles.deleteContext}>
+              <span className={styles.deleteContextDate}>{formatDate(summary.date)}</span>
+              <span
+                className={styles.deleteContextShift}
+                style={{ color: SHIFT_COLORS[summary.shift] }}
+              >
+                {summary.shift} shift
+              </span>
+              <span className={styles.deleteContextMeta}>
+                OEE {summary.total_oee?.toFixed(1)}% · {summary.machines_count} machines · {summary.faults_count} faults
+              </span>
+            </div>
+
+            <div className={styles.actionModalFooter}>
+              <button className={styles.btnCancel} onClick={onClose}>Cancel</button>
+              <button className={styles.btnDelete} onClick={() => setConfirmed(true)}>Delete</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── Page ───────────────────────────────────────────────────────────────── */
+
 export default function Shifts(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const { summaries, loading } = useSelector((s: RootState) => s.shifts);
@@ -46,6 +206,8 @@ export default function Shifts(): JSX.Element {
   const [sortCol, setSortCol] = useState<SortCol | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [page, setPage] = useState(1);
+  const [editSummary, setEditSummary]     = useState<ShiftSummary | null>(null);
+  const [deleteSummary, setDeleteSummary] = useState<ShiftSummary | null>(null);
   const PAGE_SIZE = 10;
 
   function handleSort(col: SortCol): void {
@@ -280,24 +442,47 @@ export default function Shifts(): JSX.Element {
                           </span>
                         </th>
                       ))}
+                      <th className={styles.thActions}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {pagedSummaries.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className={styles.empty}>No records found</td>
+                        <td colSpan={6} className={styles.empty}>No records found</td>
                       </tr>
                     ) : (
                       pagedSummaries.map((s) => (
                         <tr key={s._id}>
-                          <td className={styles.mono}>
-                            {new Date(s.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </td>
+                          <td className={styles.mono}>{formatDate(s.date)}</td>
                           <td className={styles.shiftCell} style={{ color: SHIFT_COLORS[s.shift] }}>{s.shift}</td>
                           <td className={styles.mono}>{s.total_oee?.toFixed(1)}%</td>
                           <td className={styles.mono}>{s.machines_count}</td>
                           <td className={`${styles.mono} ${s.faults_count > 0 ? styles.faultText : ''}`}>
                             {s.faults_count}
+                          </td>
+                          <td>
+                            <div className={styles.actionBtns}>
+                              <button
+                                className={styles.editBtn}
+                                onClick={() => setEditSummary(s)}
+                                aria-label="Edit entry"
+                                title="Edit"
+                              >
+                                <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+                                  <path d="M11.5 2.5a1.414 1.414 0 012 2L5 13H3v-2L11.5 2.5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+                                </svg>
+                              </button>
+                              <button
+                                className={styles.deleteBtn}
+                                onClick={() => setDeleteSummary(s)}
+                                aria-label="Delete entry"
+                                title="Delete"
+                              >
+                                <svg viewBox="0 0 16 16" fill="none" width="14" height="14">
+                                  <path d="M2 4h12M6 4V2h4v2M5 4v9a1 1 0 001 1h4a1 1 0 001-1V4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))
@@ -342,6 +527,13 @@ export default function Shifts(): JSX.Element {
           </>
         )}
       </main>
+
+      {editSummary && (
+        <EditModal summary={editSummary} onClose={() => setEditSummary(null)} />
+      )}
+      {deleteSummary && (
+        <DeleteModal summary={deleteSummary} onClose={() => setDeleteSummary(null)} />
+      )}
     </div>
   );
 }
