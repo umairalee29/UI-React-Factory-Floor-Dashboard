@@ -268,6 +268,10 @@
   background: var(--bg-elevated);
 }
 
+.clickableRow {
+  cursor: pointer;
+}
+
 .machineName {
   font-family: var(--font-data) !important;
   font-weight: 600 !important;

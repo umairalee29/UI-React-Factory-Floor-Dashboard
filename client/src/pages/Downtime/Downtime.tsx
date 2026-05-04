@@ -5,6 +5,7 @@ import { fetchDowntime } from '../../store/slices/downtimeSlice.js';
 import { fetchMachines } from '../../store/slices/machinesSlice.js';
 import type { RootState, AppDispatch } from '../../store/index.js';
 import type { DowntimeLog, MachineSummary } from '../../types.js';
+import DowntimeModal from '../../components/DowntimeModal/DowntimeModal.js';
 import styles from './Downtime.module.css';
 
 type SortCol = 'machine' | 'reason' | 'started' | 'ended' | 'duration' | 'shift';
@@ -59,6 +60,7 @@ export default function Downtime(): JSX.Element {
   const [sortCol, setSortCol] = useState<SortCol | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [page, setPage] = useState(1);
+  const [selectedLog, setSelectedLog] = useState<DowntimeLog | null>(null);
   const PAGE_SIZE = 10;
 
   function handleSort(col: SortCol): void {
@@ -237,7 +239,7 @@ export default function Downtime(): JSX.Element {
                   </tr>
                 ) : (
                   pagedLogs.map((log) => (
-                    <tr key={log._id}>
+                    <tr key={log._id} className={styles.clickableRow} onClick={() => setSelectedLog(log)}>
                       <td className={styles.machineName}>{getMachineName(log)}</td>
                       <td>{log.reason}</td>
                       <td className={styles.mono}>{formatDate(log.started_at)}</td>
@@ -297,6 +299,10 @@ export default function Downtime(): JSX.Element {
           </div>
         )}
       </main>
+
+      {selectedLog && (
+        <DowntimeModal log={selectedLog} onClose={() => setSelectedLog(null)} />
+      )}
     </div>
   );
 }
