@@ -117,7 +117,7 @@
 
 .tableCount {
   font-size: 0.78rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-family: var(--font-data);
 }
 
@@ -333,7 +333,7 @@
 
 .pageInfo {
   font-size: 0.78rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   font-family: var(--font-data);
 }
 
