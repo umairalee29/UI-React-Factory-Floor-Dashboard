@@ -298,6 +298,10 @@
   background: var(--bg-elevated);
 }
 
+.clickableRow {
+  cursor: pointer;
+}
+
 .mono {
   font-family: var(--font-data) !important;
   font-size: 0.82rem !important;

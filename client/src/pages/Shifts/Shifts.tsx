@@ -8,6 +8,7 @@ import TopBar from '../../components/TopBar/TopBar.js';
 import { fetchShifts } from '../../store/slices/shiftsSlice.js';
 import type { RootState, AppDispatch } from '../../store/index.js';
 import type { Shift, ShiftSummary } from '../../types.js';
+import ShiftModal from '../../components/ShiftModal/ShiftModal.js';
 import styles from './Shifts.module.css';
 
 const SHIFT_COLORS: Record<Shift, string> = {
@@ -206,8 +207,9 @@ export default function Shifts(): JSX.Element {
   const [sortCol, setSortCol] = useState<SortCol | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [page, setPage] = useState(1);
-  const [editSummary, setEditSummary]     = useState<ShiftSummary | null>(null);
-  const [deleteSummary, setDeleteSummary] = useState<ShiftSummary | null>(null);
+  const [selectedSummary, setSelectedSummary] = useState<ShiftSummary | null>(null);
+  const [editSummary, setEditSummary]         = useState<ShiftSummary | null>(null);
+  const [deleteSummary, setDeleteSummary]     = useState<ShiftSummary | null>(null);
   const PAGE_SIZE = 10;
 
   function handleSort(col: SortCol): void {
@@ -452,7 +454,7 @@ export default function Shifts(): JSX.Element {
                       </tr>
                     ) : (
                       pagedSummaries.map((s) => (
-                        <tr key={s._id}>
+                        <tr key={s._id} className={styles.clickableRow} onClick={() => setSelectedSummary(s)}>
                           <td className={styles.mono}>{formatDate(s.date)}</td>
                           <td className={styles.shiftCell} style={{ color: SHIFT_COLORS[s.shift] }}>{s.shift}</td>
                           <td className={styles.mono}>{s.total_oee?.toFixed(1)}%</td>
@@ -460,7 +462,7 @@ export default function Shifts(): JSX.Element {
                           <td className={`${styles.mono} ${s.faults_count > 0 ? styles.faultText : ''}`}>
                             {s.faults_count}
                           </td>
-                          <td>
+                          <td onClick={(e) => e.stopPropagation()}>
                             <div className={styles.actionBtns}>
                               <button
                                 className={styles.editBtn}
@@ -528,6 +530,9 @@ export default function Shifts(): JSX.Element {
         )}
       </main>
 
+      {selectedSummary && (
+        <ShiftModal summary={selectedSummary} onClose={() => setSelectedSummary(null)} />
+      )}
       {editSummary && (
         <EditModal summary={editSummary} onClose={() => setEditSummary(null)} />
       )}
